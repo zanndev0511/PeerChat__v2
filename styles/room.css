@@ -208,8 +208,8 @@
   border-radius: 50%;
   cursor: pointer;
   overflow: hidden;
-  height: 250px;
-  width: 250px;
+  height: 300px;
+  width: 300px;
 
   background-image: url('/images/logo.png');
   background-repeat: no-repeat;

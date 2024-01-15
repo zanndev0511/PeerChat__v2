@@ -67,8 +67,6 @@ let hideDisplayFrame = (e, memberID) => {
     videoFrames[i].style.height = '300px';
     videoFrames[i].style.width = '300px';
   }
-
-  console.log('hi toi la ' + child);
 };
 
 // displayFrame.addEventListener('click', hideDisplayFrame);
