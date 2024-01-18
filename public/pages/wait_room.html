@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"
+    />
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="../styles/wait_room.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="videos">
+        <video class="video-players" id="user" autoplay playsinline></video>
+        <div class="stream__actions">
+          <button id="camera-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M5 4h-3v-1h3v1zm10.93 0l.812 1.219c.743 1.115 1.987 1.781 3.328 1.781h1.93v13h-20v-13h3.93c1.341 0 2.585-.666 3.328-1.781l.812-1.219h5.86zm1.07-2h-8l-1.406 2.109c-.371.557-.995.891-1.664.891h-5.93v17h24v-17h-3.93c-.669 0-1.293-.334-1.664-.891l-1.406-2.109zm-11 8c0-.552-.447-1-1-1s-1 .448-1 1 .447 1 1 1 1-.448 1-1zm7 0c1.654 0 3 1.346 3 3s-1.346 3-3 3-3-1.346-3-3 1.346-3 3-3zm0-2c-2.761 0-5 2.239-5 5s2.239 5 5 5 5-2.239 5-5-2.239-5-5-5z"
+              />
+            </svg>
+          </button>
+          <button id="mic-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 2c1.103 0 2 .897 2 2v7c0 1.103-.897 2-2 2s-2-.897-2-2v-7c0-1.103.897-2 2-2zm0-2c-2.209 0-4 1.791-4 4v7c0 2.209 1.791 4 4 4s4-1.791 4-4v-7c0-2.209-1.791-4-4-4zm8 9v2c0 4.418-3.582 8-8 8s-8-3.582-8-8v-2h2v2c0 3.309 2.691 6 6 6s6-2.691 6-6v-2h2zm-7 13v-2h-2v2h-4v2h10v-2h-4z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="infor__container">
+        <h1>Join Stream?</h1>
+        <p>There's no one here right now</p>
+        <button id="join-btn">Join Stream</button>
+      </div>
+    </div>
+  </body>
+  <script>
+    let localStream;
+    let remoteStream1;
+    let micro_active = true;
+    let camera_active = true;
+
+    let cameraTrack;
+
+    let init = async () => {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
+      });
+      document.getElementById('user').srcObject = localStream;
+      document.getElementById('camera-btn').classList.add('active');
+      document.getElementById('mic-btn').classList.add('active');
+
+      cameraTrack = localStream.getVideoTracks()[0];
+    };
+
+    let toggleCamera = async (e) => {
+      let button = e.currentTarget;
+
+      if (!camera_active) {
+        button.classList.add('active');
+        camera_active = true;
+        sessionStorage.setItem('camera_active', camera_active);
+        cameraTrack.enabled = true;
+      } else {
+        button.classList.remove('active');
+        camera_active = false;
+        sessionStorage.setItem('camera_active', camera_active);
+        cameraTrack.enabled = false;
+      }
+    };
+    let toggleMic = async (e) => {
+      let button = e.currentTarget;
+
+      if (!micro_active) {
+        button.classList.add('active');
+        micro_active = true;
+        sessionStorage.setItem('micro_active', micro_active);
+      } else {
+        button.classList.remove('active');
+        micro_active = false;
+        sessionStorage.setItem('micro_active', micro_active);
+      }
+    };
+    document
+      .getElementById('camera-btn')
+      .addEventListener('click', toggleCamera);
+    document.getElementById('mic-btn').addEventListener('click', toggleMic);
+
+    // let join = document.getElementById('join-btn');
+    // let displayName = sessionStorage.getItem('display_name');
+    // if (displayName) {
+    //   form.name.value = displayName;
+    // }
+
+    let inviteCode = sessionStorage.getItem('inviteCode');
+
+    let joinStream = () => {
+      window.location.href = `../pages/room.html?room=${inviteCode}`;
+    };
+    document.getElementById('join-btn').addEventListener('click', joinStream);
+
+    // join.addEventListener('click', () => {
+    //   //   e.preventDefault();
+    //   //   let inviteCode = e.target.room.value;
+    //   //   window.location = `room.html?room=${inviteCode}`;
+    //   window.location.href = `lobby.html`;
+    // });
+    init();
+  </script>
+</html>
