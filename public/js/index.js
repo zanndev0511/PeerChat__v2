@@ -1,27 +1,26 @@
 let express = require('express');
+
 const path = require('path');
 let app = express();
 let httpServer = require('http').createServer(app);
 let io = require('socket.io')(httpServer);
 
 let connections = [];
-let drawings = [];
+
+let members = [];
+
+let share_uid;
+let share_result;
 
 io.on('connect', (socket) => {
   connections.push(socket);
   console.log(`${socket.id} connected`);
+  console.log(share_result);
 
   socket.on('draw', (data) => {
     connections.forEach((con) => {
       if (con.id != socket.id) {
         con.emit('ondraw', { x: data.x, y: data.y });
-      }
-    });
-  });
-  socket.on('savedraw', (data) => {
-    connections.forEach((con) => {
-      if (con.id != socket.id) {
-        con.emit('onsavedraw', { drawings: data.drawings });
       }
     });
   });
@@ -34,16 +33,48 @@ io.on('connect', (socket) => {
     });
   });
 
-  socket.on('share', (data) => {
-    console.log('success', data);
+  socket.on('shareboard', (data) => {
+    console.log('success', data.shareResult);
     connections.forEach((con) => {
       if (con.id != socket.id) {
-        con.emit('onshare', { shareBoard: data.shareBoard });
+        share_uid = data.userId;
+        share_result = data.shareResult;
+
+        con.emit('onshareboard', {
+          userId: data.userId,
+          shareResult: data.shareResult,
+          shareBoard: data.shareBoard,
+        });
+      }
+    });
+  });
+  socket.on('closeboard', (data) => {
+    connections.forEach((con) => {
+      if (con.id != socket.id) {
+        con.emit('oncloseboard', {
+          shareBoard: data.shareBoard,
+        });
       }
     });
   });
 
-  socket.emit('drawings', drawings);
+  socket.on('keepdraw', (data) => {
+    console.log('success', data);
+    connections.forEach((con) => {
+      if (con.id != socket.id) {
+        con.emit('onkeepdraw', { points: data.points });
+      }
+    });
+  });
+  socket.on('member_review', (data) => {
+    connections.forEach((con) => {
+      if (con.id != socket.id) {
+        members.push(data.nameReview);
+        var uniqueArray = [...new Set(data.nameReview)];
+        con.emit('onmember_review', { nameReview: uniqueArray });
+      }
+    });
+  });
 
   socket.on('disconnect', (reason) => {
     console.log(`${socket.id} disconnected`);

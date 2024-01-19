@@ -390,3 +390,7 @@
 #video-1 {
   display: none !important;
 }
+.miro-embedded-board {
+  width: 100%;
+  height: 100%;
+}

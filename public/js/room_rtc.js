@@ -36,12 +36,15 @@ let remoteUsers = {};
 let localScreenTracks;
 let sharingScreen = false;
 
+let sharingBoard = false;
+
 let checkCamera = true;
 let checkMic = true;
 let checkBoard = false;
 
+let database = firebase.database();
+
 let joinRoomInit = async () => {
-  checkBoard = false;
   rtmClient = await AgoraRTM.createInstance(APP_ID);
   await rtmClient.login({ uid, token });
 
@@ -215,11 +218,11 @@ let handleUserPublished = async (user, mediaType) => {
       });
   }
 
-  if (displayFrame.style.display) {
-    let videoFrame = document.getElementById(`user-container-${user.uid}`);
-    videoFrame.style.height = '100px';
-    videoFrame.style.width = '100px';
-  }
+  // if (displayFrame.style.display) {
+  //   let videoFrame = document.getElementById(`user-container-${user.uid}`);
+  //   videoFrame.style.height = '100px';
+  //   videoFrame.style.width = '100px';
+  // }
 
   if (mediaType === 'video') {
     user.videoTrack.play(`user-${user.uid}`);
@@ -364,48 +367,55 @@ let toggleScreen = async (e) => {
   }
 };
 let toggleBoard = async (e) => {
-  checkBoard = true;
   let boardButton = e.currentTarget;
+  if (!sharingBoard) {
+    sharingBoard = true;
 
-  addBotMessageToDom(`${displayName} is sharing the board! 👀`);
+    miroBoardsPicker.open({
+      clientId: '3458764576064619354',
+      action: 'access-link',
+      success: function (result) {
+        console.log(result);
 
-  boardButton.classList.add('active');
-  displayFrame.style.display = 'block';
-  document
-    .getElementById(`video-1`)
-    .style.setProperty('display', 'flex', 'important');
+        boardButton.classList.add('active');
 
-  // let player = `<div class="video__infor" id="video-1">
-  //                 <div class="video__container" id="user-container-1">
-  //                 <canvas class="canvas__container" id="canvas" ></canvas>
-  //                 </div>
-  //                 <p>${displayName}'s White Board</p>
-  //               </div> `;
+        io.emit('shareboard', {
+          userId: uid,
+          shareResult: result.accessLink,
+        });
 
-  // let player = '<canvas id="canvas" ></canvas>';
+        document.getElementById('stream__box').innerHTML = result.embedHtml;
+        document.getElementById('stream__box').style.display = 'flex';
+      },
+    });
+  } else {
+    sharingBoard = false;
 
-  // document
-  //   .getElementById('stream__container')
-  //   .insertAdjacentHTML('afterbegin', player);
+    io.emit('closeboard', {
+      shareBoard: sharingBoard,
+    });
 
-  // document.getElementById(`video-1`).addEventListener('click', (e) => {
-  //   expandVideoFrame(e);
-  //   memberID = user.uid;
-  // });
+    boardButton.classList.remove('active');
 
-  document.getElementById('canvas').style.backgroundColor = 'white';
-
-  let videoFrames = document.getElementsByClassName('video__container');
-  for (let i = 0; videoFrames.length > i; i++) {
-    if (videoFrames[i].id != userIdInDisplayFrame) {
-      videoFrames[i].style.height = '100px';
-      videoFrames[i].style.width = '100px';
-    }
+    document.getElementById('stream__box').style.display = 'none';
+    document.getElementById('miro-board').remove();
+    database.ref('shareBoard/').remove();
   }
 };
 let leaveStream = async (e) => {
   localTracks[1].setEnabled(false);
   window.location.href = 'lobby.html';
+};
+
+let checkShareBoard = () => {
+  database.ref('shareBoard/').on('value', function (snapshot) {
+    var data = snapshot.val();
+    let iframe = `<iframe class="miro-embedded-board" id="miro-board" src=${data.link} referrerpolicy="no-referrer-when-downgrade" allowfullscreen allow="fullscreen; clipboard-read; clipboard-write" style="background: transparent; border: 1px solid rgb(204, 204, 204);"></iframe>`;
+    if (data.link != '') {
+      document.getElementById('stream__box').innerHTML = iframe;
+      document.getElementById('stream__box').style.display = 'flex';
+    }
+  });
 };
 
 document.getElementById('stream__box').addEventListener('click', (e) => {
@@ -415,9 +425,38 @@ document.getElementById('stream__box').addEventListener('click', (e) => {
 document.getElementById('camera-btn').addEventListener('click', toggleCamera);
 document.getElementById('mic-btn').addEventListener('click', toggleMic);
 document.getElementById('screen-btn').addEventListener('click', toggleScreen);
+document.getElementById('board-btn').addEventListener('click', toggleBoard);
 
 document.getElementById('leave-btn').addEventListener('click', leaveStream);
 
-// stream is a video object published by agora rtc
-
 joinRoomInit();
+
+checkShareBoard();
+
+io.on('onshareboard', ({ userId, shareResult, shareBoard }) => {
+  database.ref('shareBoard/uid').set(userId);
+
+  if (shareResult) {
+    database.ref('shareBoard/link').set(shareResult);
+  }
+
+  let iframe = `<iframe class="miro-embedded-board" id="miro-board" src=${shareResult} referrerpolicy="no-referrer-when-downgrade" allowfullscreen allow="fullscreen; clipboard-read; clipboard-write" style="background: transparent; border: 1px solid rgb(204, 204, 204);"></iframe>`;
+  if (data.link != '') {
+    document.getElementById('stream__box').innerHTML = iframe;
+    document.getElementById('stream__box').style.display = 'flex';
+  }
+  io.on('onshareboard', ({ userId, shareResult }) => {
+    console.log('hi ' + shareBoard);
+    if (!shareBoard) {
+      document.getElementById('stream__box').style.display = 'none';
+      document.getElementById('miro-board').remove();
+    }
+  });
+});
+io.on('oncloseboard', ({ shareBoard }) => {
+  console.log('hi ' + shareBoard);
+  if (!shareBoard) {
+    document.getElementById('stream__box').style.display = 'none';
+    document.getElementById('miro-board').remove();
+  }
+});

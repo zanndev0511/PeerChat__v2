@@ -87,6 +87,9 @@
         <section id="stream__container">
           
           <div id="stream__box">
+
+            <!-- <iframe class="miro-embedded-board" id="miro-board"  referrerpolicy="no-referrer-when-downgrade" allowfullscreen allow="fullscreen; clipboard-read; clipboard-write" style="background: transparent; border: 1px solid rgb(204, 204, 204);"></iframe> -->
+            
             <div class="video__infor-canvas" id="video-1">
               <div class="video__container-canvas" id="user-container-1">
               <canvas class="canvas__container" id="canvas" ></canvas>
@@ -171,143 +174,27 @@
       </div>
     </main>
   </body>
+  <script src="../js/firebase.js"></script>
+  <script>
+    const firebaseConfig = {
+    apiKey: "AIzaSyCE02TKb41QVnTft9lU-fKnOg3OjXYRNQ8",
+    authDomain: "rtc-chat-103dd.firebaseapp.com",
+    databaseURL: "https://rtc-chat-103dd-default-rtdb.firebaseio.com",
+    projectId: "rtc-chat-103dd",
+    storageBucket: "rtc-chat-103dd.appspot.com",
+    messagingSenderId: "391645592416",
+    appId: "1:391645592416:web:924f6006cc1123f252fc05",
+    measurementId: "G-C7NLVGJFZL"
+  };
+  firebase.initializeApp(firebaseConfig);
+  </script>
+  <script type="text/javascript" src="https://miro.com/app/static/boardsPicker.1.0.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script type="text/javascript" src="../js/AgoraRTC_N-4.20.0.js"></script>
   <script type="text/javascript" src="../js/agora-rtm-sdk-1.4.4.js"></script>
   <script type="text/javascript" src="../js/room.js"></script>
   <script type="text/javascript" src="../js/room_rtm.js"></script>
   <script type="text/javascript" src="../js/room_rtc.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-  <!-- <script src="../js/script.js"></script> -->
-  <script>
-    let canvas = document.getElementById('canvas');
-    canvas.width =  window.innerWidth;
-    canvas.height = window.innerHeight;
 
-    let shareBoard = document.getElementById('video-1');
-
-    var io = io.connect('http://localhost:5502');
-
-    let ctx = canvas.getContext('2d');
-
-    let x;
-    let y;
-    let mouseDown = false;
-    let checkShareBoard = false;
-
-    let drawings = [];
-
-    
-
-    // Lắng nghe sự kiện về đường vẽ từ server khi trang được tải lại
-    io.on('onsavedraw', ({data}) => {
-      // Vẽ lại đường vẽ khi trang được tải lại
-      // drawings.forEach(draw);
-      // draw(data);
-      console.log('hi giang' + data);
-
-      console.log('hi looi')
-    });
-
-    // Hàm để vẽ lại đường vẽ từ dữ liệu
-    // function draw(data) {
-    //   // ctx.beginPath();
-    //   // ctx.moveTo(data[0].x, data[0].y);
-    //   data.forEach(point => {
-    //     // ctx.lineTo(point.x, point.y);
-    //     // ctx.stroke();
-    //     console.log(point +'hi giang');
-    //   });
-    // }
-
-
-    document.getElementById('stream__box').onmousedown = (e) => {
-      ctx.moveTo(x, y);
-      io.emit('down', { x, y });
-      mouseDown = true;
-    };
-
-    document.getElementById('board-btn').onclick = (e) => {
-      checkShareBoard = true;
-      io.emit('share', {shareBoard: checkShareBoard});
-      
-      let boardButton = e.currentTarget;
-      boardButton.classList.add('active');
-      document.getElementById('stream__box').style.display = 'block';
-
-      var videoElement = document.getElementById('video-1');
-        videoElement.style.setProperty('display', 'flex', 'important');
-      
-      document.getElementById('canvas').style.backgroundColor = 'white';
-
-        let videoFrames = document.getElementsByClassName('video__container');
-        for (let i = 0; videoFrames.length > i; i++) {
-          if (videoFrames[i].id != userIdInDisplayFrame) {
-            videoFrames[i].style.height = '100px';
-            videoFrames[i].style.width = '100px';
-          }
-        }
-    }
-
-    document.getElementById('stream__box').onmouseup = (e) => {
-      mouseDown = false;
-
-    };
-
-    io.on('ondraw', ({ x, y }) => {
-      ctx.lineTo(x, y);
-      ctx.stroke();
-    });
-
-    io.on('ondown', ({ x, y }) => {
-      ctx.moveTo(x, y);
-    });
-
-    io.on('onshare', ({shareBoard}) => {
-        console.log('success hihi' + shareBoard);
-
-        var videoElement = document.getElementById('video-1');
-        videoElement.style.setProperty('display', 'flex', 'important');
-        window.getComputedStyle(videoElement).getPropertyValue('display');
-
-
-        document.getElementById('board-btn').classList.add('active');
-        document.getElementById('stream__box').style.display = 'flex';
-      
-      
-      // console.log('success hihi');
-        document.getElementById('canvas').style.backgroundColor = 'white';
-
-        let videoFrames = document.getElementsByClassName('video__container');
-        for (let i = 0; videoFrames.length > i; i++) {
-          if (videoFrames[i].id != userIdInDisplayFrame) {
-            videoFrames[i].style.height = '100px';
-            videoFrames[i].style.width = '100px';
-          }
-        }
-        // if(shareBoard) {
-      // document
-      //       .getElementById(`video-1`)
-      //        .style.setProperty('display', 'flex', 'important');
-    // }
-      });
-
-    document.getElementById('stream__box').onmousemove = (e) => {
-      x = e.clientX;
-      y = e.clientY;
-
-      // console.log({x,y})
-
-      if (mouseDown) {
-        io.emit('draw', { x, y });
-        
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        console.log(x + " " + y + "mousedown");
-        drawings.push({x, y})
-        io.emit('savedraw', { drawings: drawings })
-      
-      }
-
-    };
-  </script>
+  
 </html>

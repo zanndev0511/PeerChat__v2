@@ -59,20 +59,13 @@ for (let i = 0; videoFrames.length > i; i++) {
 let hideDisplayFrame = (e, memberID) => {
   userIdInDisplayFrame = null;
 
-  if (document.getElementById('video-1').style.display == 'flex') {
-    for (let i = 0; videoFrames.length > i; i++) {
-      videoFrames[i].style.height = '100px';
-      videoFrames[i].style.width = '100px';
-    }
-  } else {
-    displayFrame.style.display = null;
+  displayFrame.style.display = null;
 
-    let child = displayFrame.children[0];
-    document.getElementById('streams__container').prepend(child);
-    for (let i = 0; videoFrames.length > i; i++) {
-      videoFrames[i].style.height = '300px';
-      videoFrames[i].style.width = '300px';
-    }
+  let child = displayFrame.children[0];
+  document.getElementById('streams__container').prepend(child);
+  for (let i = 0; videoFrames.length > i; i++) {
+    videoFrames[i].style.height = '300px';
+    videoFrames[i].style.width = '300px';
   }
 };
 
