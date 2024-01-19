@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta
-    http-equiv="Content-Security-Policy"
-    content="style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"
-  />
+      http-equiv="Content-Security-Policy"
+      content="style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"
+    />
     <title>Room</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
@@ -27,14 +27,26 @@
     <header id="nav">
       <div class="nav--list">
         <button id="members__button">
-               <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 18v1h-24v-1h24zm0-6v1h-24v-1h24zm0-6v1h-24v-1h24z" fill="#ede0e0"><path d="M24 19h-24v-1h24v1zm0-6h-24v-1h24v1zm0-6h-24v-1h24v1z"/></svg>
-            </button>
-            <a href="./lobby.html">
-                <h3 id="logo">
-                    <img src="../images/logo.png" alt="Site Logo">
-                    <span>Mumble</span>
-                </h3>
-            </a>
+          <svg
+            width="24"
+            height="24"
+            xmlns="http://www.w3.org/2000/svg"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+          >
+            <path
+              d="M24 18v1h-24v-1h24zm0-6v1h-24v-1h24zm0-6v1h-24v-1h24z"
+              fill="#ede0e0"
+            />
+            <path d="M24 19h-24v-1h24v1zm0-6h-24v-1h24v1zm0-6h-24v-1h24v1z" />
+          </svg>
+        </button>
+        <a href="./lobby.html">
+          <h3 id="logo">
+            <img src="../images/logo.png" alt="Site Logo" />
+            <span>Mumble</span>
+          </h3>
+        </a>
       </div>
 
       <div id="nav__links">
@@ -85,22 +97,18 @@
         </section>
 
         <section id="stream__container">
-          
           <div id="stream__box">
-
             <!-- <iframe class="miro-embedded-board" id="miro-board"  referrerpolicy="no-referrer-when-downgrade" allowfullscreen allow="fullscreen; clipboard-read; clipboard-write" style="background: transparent; border: 1px solid rgb(204, 204, 204);"></iframe> -->
-            
+
             <div class="video__infor-canvas" id="video-1">
               <div class="video__container-canvas" id="user-container-1">
-              <canvas class="canvas__container" id="canvas" ></canvas>
+                <canvas class="canvas__container" id="canvas"></canvas>
               </div>
               <!-- <p>${displayName}'s White Board</p> -->
             </div>
           </div>
 
-          <div id="streams__container">
-         
-          </div>
+          <div id="streams__container"></div>
 
           <div class="stream__actions">
             <button id="camera-btn" class="active">
@@ -140,7 +148,7 @@
               </svg>
             </button>
             <button id="board-btn">
-              <img src='../images/education.png'/>
+              <img src="../images/education.png" />
             </button>
             <button id="leave-btn" style="background-color: #ff5050">
               <svg
@@ -168,33 +176,80 @@
               name="message"
               placeholder="Send a message...."
             />
+            <img
+              src="../images/attach-file.png"
+              id="icon-upload"
+              height="30"
+              width="30"
+              onclick="_upload()"
+            />
+            <input type="file" id="file-upload" multiple />
           </form>
         </section>
-        
       </div>
     </main>
   </body>
   <script src="../js/firebase.js"></script>
   <script>
     const firebaseConfig = {
-    apiKey: "AIzaSyCE02TKb41QVnTft9lU-fKnOg3OjXYRNQ8",
-    authDomain: "rtc-chat-103dd.firebaseapp.com",
-    databaseURL: "https://rtc-chat-103dd-default-rtdb.firebaseio.com",
-    projectId: "rtc-chat-103dd",
-    storageBucket: "rtc-chat-103dd.appspot.com",
-    messagingSenderId: "391645592416",
-    appId: "1:391645592416:web:924f6006cc1123f252fc05",
-    measurementId: "G-C7NLVGJFZL"
-  };
-  firebase.initializeApp(firebaseConfig);
+      apiKey: 'AIzaSyCE02TKb41QVnTft9lU-fKnOg3OjXYRNQ8',
+      authDomain: 'rtc-chat-103dd.firebaseapp.com',
+      databaseURL: 'https://rtc-chat-103dd-default-rtdb.firebaseio.com',
+      projectId: 'rtc-chat-103dd',
+      storageBucket: 'rtc-chat-103dd.appspot.com',
+      messagingSenderId: '391645592416',
+      appId: '1:391645592416:web:924f6006cc1123f252fc05',
+      measurementId: 'G-C7NLVGJFZL',
+    };
+    firebase.initializeApp(firebaseConfig);
   </script>
-  <script type="text/javascript" src="https://miro.com/app/static/boardsPicker.1.0.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script
+    type="text/javascript"
+    src="https://miro.com/app/static/boardsPicker.1.0.js"
+  ></script>
+  <script src="../js/socket.io.js"></script>
   <script type="text/javascript" src="../js/AgoraRTC_N-4.20.0.js"></script>
   <script type="text/javascript" src="../js/agora-rtm-sdk-1.4.4.js"></script>
   <script type="text/javascript" src="../js/room.js"></script>
   <script type="text/javascript" src="../js/room_rtm.js"></script>
   <script type="text/javascript" src="../js/room_rtc.js"></script>
+  <script>
+    function _upload() {
+      document.getElementById('file-upload').click();
+    }
 
-  
+    const fileUpload = document.querySelector('#file-upload');
+    fileUpload.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+
+      // Read the file content
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const fileContent = e.target.result;
+
+        // Send the file to the server
+        io.emit('file', {
+          fileName: file.name,
+          fileType: file.type,
+          displayName: displayName,
+          fileContent: file,
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    io.on('onfile', (data) => {
+      let fileName = data.fileName;
+      let displayName = data.displayName;
+      let dataFile = data.fileContent;
+      let typeFile = data.fileType;
+
+      const blob = new Blob([dataFile], { type: typeFile });
+      let fileUrl = URL.createObjectURL(blob);
+      fileUrl.download = fileName;
+      console.log('hihi' + fileUrl);
+
+      addFileToDom(displayName, fileName, fileUrl);
+    });
+  </script>
 </html>

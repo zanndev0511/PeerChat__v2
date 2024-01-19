@@ -75,6 +75,18 @@ io.on('connect', (socket) => {
       }
     });
   });
+  socket.on('file', (data) => {
+    connections.forEach((con) => {
+      // if (con.id != socket.id) {
+      con.emit('onfile', {
+        fileName: data.fileName,
+        fileType: data.fileType,
+        displayName: data.displayName,
+        fileContent: data.fileContent,
+      });
+      // }
+    });
+  });
 
   socket.on('disconnect', (reason) => {
     console.log(`${socket.id} disconnected`);

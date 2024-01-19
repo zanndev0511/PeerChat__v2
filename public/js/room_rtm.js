@@ -108,6 +108,25 @@ let addMessageToDom = (name, message) => {
     lastMessage.scrollIntoView();
   }
 };
+let addFileToDom = (name, fileName, fileUrl) => {
+  let messagesWrapper = document.getElementById('messages');
+
+  let newMessage = `<div class="message__wrapper">
+                        <div class="message__body">
+                            <strong class="message__author">${name}</strong>
+                            <p><a class="message__text" href=${fileUrl} download=${fileName}>${fileName}</a></p>
+                        </div>
+                    </div>`;
+
+  messagesWrapper.insertAdjacentHTML('beforeend', newMessage);
+
+  let lastMessage = document.querySelector(
+    '#messages .message__wrapper:last-child'
+  );
+  if (lastMessage) {
+    lastMessage.scrollIntoView();
+  }
+};
 
 let addBotMessageToDom = (botMessage) => {
   let messagesWrapper = document.getElementById('messages');
