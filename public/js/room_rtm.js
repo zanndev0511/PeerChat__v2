@@ -1,5 +1,7 @@
 var io = io.connect('http://localhost:5502');
 
+const threshold = 0.8; // our minimum threshold
+
 let handleMemberJoined = async (MemberId) => {
   console.log('A new member has joined the room:', MemberId);
   addMemberToDom(MemberId);
@@ -85,7 +87,16 @@ let sendMessage = async (e) => {
       displayName: displayName,
     }),
   });
-  addMessageToDom(displayName, message);
+
+  // const predictions = await classify(model, message);
+  // if (predictions.length == 0) {
+  //   addMessageToDom(displayName, message);
+  // } else {
+  //   addMessageToDom(displayName, '***');
+  // }
+  main(message, displayName);
+  // addMessageToDom(displayName, message);
+
   e.target.reset();
 };
 
@@ -133,7 +144,7 @@ let addBotMessageToDom = (botMessage) => {
 
   let newMessage = `<div class="message__wrapper">
                         <div class="message__body__bot">
-                            <strong class="message__author__bot">🤖 Mumble Bot</strong>
+                            <strong class="message__author__bot">🤖 GIT Bot</strong>
                             <p class="message__text__bot">${botMessage}</p>
                         </div>
                     </div>`;
@@ -165,4 +176,27 @@ let shareMember = async (MemberId) => {
   nameReview.push(name);
 
   io.emit('member_review', { nameReview });
+};
+
+let classify = async (model, text) => {
+  const sentences = [text]; // The model takes list as input
+  // I used model.predict instead of model.classify
+  let predictions = await model.classify(sentences);
+  predictions = predictions.map((prediction) => ({
+    label: prediction['label'],
+    match: prediction.results[0]['match'],
+  })); // Label is like "identity_threat", "toxicity"
+  // match is whether the text matches the label
+  return predictions.filter((p) => p.match).map((p) => p.label); // This gives us a list like ["identity_threat", "toxocity"]
+};
+
+const main = async (text, displayName) => {
+  const model = await toxicity.load(threshold);
+
+  const predictions = await classify(model, text);
+  if (predictions.length == 0) {
+    addMessageToDom(displayName, text);
+  } else {
+    addMessageToDom(displayName, '***');
+  }
 };

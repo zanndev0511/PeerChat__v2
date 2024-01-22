@@ -22,6 +22,8 @@
       media="screen"
       href="../styles/room.css"
     />
+    <script src="../js/tfjs.js"></script>
+    <script src="../js/toxicity.js"></script>
   </head>
   <body>
     <header id="nav">
@@ -44,7 +46,7 @@
         <a href="./lobby.html">
           <h3 id="logo">
             <img src="../images/logo.png" alt="Site Logo" />
-            <span>Mumble</span>
+            <span>GIT MEET</span>
           </h3>
         </a>
       </div>
@@ -208,6 +210,7 @@
     src="https://miro.com/app/static/boardsPicker.1.0.js"
   ></script>
   <script src="../js/socket.io.js"></script>
+
   <script type="text/javascript" src="../js/AgoraRTC_N-4.20.0.js"></script>
   <script type="text/javascript" src="../js/agora-rtm-sdk-1.4.4.js"></script>
   <script type="text/javascript" src="../js/room.js"></script>
@@ -247,7 +250,6 @@
       const blob = new Blob([dataFile], { type: typeFile });
       let fileUrl = URL.createObjectURL(blob);
       fileUrl.download = fileName;
-      console.log('hihi' + fileUrl);
 
       addFileToDom(displayName, fileName, fileUrl);
     });
