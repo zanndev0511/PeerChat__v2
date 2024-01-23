@@ -58,32 +58,4 @@ let join = () => {
 };
 document.getElementById('join-btn').addEventListener('click', join);
 
-// let addMemberOnl = () => {
-//   let text = '';
-//   memberReview.map((item, index) => {
-//     text += item + ',';
-//     console.log(item + 'hihizan1');
-//   });
-
-//   document.getElementById('memberOnl').innerText = `Participating: ${text}`;
-// };
-
-// let memberOnl = async () => {
-//   let members = await channel.getMembers();
-//   for (let i = 0; members.length > i; i++) {
-//     addMemberToDom(members[i]);
-//   }
-// };
-// io.on('onmember_review', (data) => {
-//   //   for (var i = 0; i < data.nameReview.length; i++) {
-//   //     text += data.nameReview[i];
-//   //   }
-//   //   var uniqueArray = [...new Set(data.nameReview)];
-
-//   data.nameReview.map((item, index) => {
-//     memberReview.push(item);
-//     console.log(item + 'hihizan');
-//   });
-// });
-
 init();

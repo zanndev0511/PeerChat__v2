@@ -1,4 +1,4 @@
-const APP_ID = '432f4e618da5403b8d85767b62915837';
+const APP_ID = 'YOUR_APP_ID';
 
 let camera_active = sessionStorage.getItem('camera_active');
 let mic_active = sessionStorage.getItem('micro_active');
@@ -110,36 +110,6 @@ let joinStream = async () => {
     document.getElementById('mic-btn').classList.remove('active');
     checkMic = false;
   }
-
-  // if (mic_active == 'false' && camera_active == 'false') {
-  //   let player1 = `<div class="video__container" id="nonCam-container">
-  //                   <div class="video-player" id="nonCam"></div>
-  //                </div>`;
-
-  //   document
-  //     .getElementById('streams__container')
-  //     .insertAdjacentHTML('beforeend', player1);
-  //   localTracks[1].play(`nonCam`);
-
-  // }
-  // if (mic_active == 'true') {
-  //   await localTracks[0].setMuted(false);
-  //   document.getElementById('mic-btn').classList.add('active');
-  // } else {
-  //   await localTracks[0].setMuted(true);
-  //   document.getElementById('mic-btn').classList.remove('active');
-  // }
-
-  // if (camera_active == 'true') {
-  //   await localTracks[1].setMuted(false);
-  //   document.getElementById('camera-btn').classList.add('active');
-  //   checkCamera = true;
-  // } else {
-  // await localTracks[1].setMuted(true);
-  // document.getElementById('camera-btn').classList.remove('active');
-  // checkCamera = false;
-  // }
-
   localTracks[1].play(`user-${uid}`);
   await client.publish([localTracks[0], localTracks[1]]);
 };
@@ -171,20 +141,7 @@ let switchToCamera = async () => {
     await localTracks[0].setMuted(true);
     micButton.classList.remove('active');
   }
-  // if (!localTracks[1].enabled) {
-  //   await localTracks[1].setEnabled(true);
-  //   await client.publish([localTracks[0], localTracks[1]]);
-  //   button.classList.add('active');
-  //   checkCamera = true;
-  // } else {
-  //   await localTracks[1].setEnabled(false);
-  //   await client.publish([localTracks[0]]);
-  //   button.classList.remove('active');
-  //   checkCamera = false;
-  // }
-  // await localTracks[0].setMuted(true);
 
-  // document.getElementById('mic-btn').classList.remove('active');
   document.getElementById('screen-btn').classList.remove('active');
 
   localTracks[1].play(`user-${uid}`);
@@ -217,12 +174,6 @@ let handleUserPublished = async (user, mediaType) => {
         memberID = user.uid;
       });
   }
-
-  // if (displayFrame.style.display) {
-  //   let videoFrame = document.getElementById(`user-container-${user.uid}`);
-  //   videoFrame.style.height = '100px';
-  //   videoFrame.style.width = '100px';
-  // }
 
   if (mediaType === 'video') {
     user.videoTrack.play(`user-${user.uid}`);

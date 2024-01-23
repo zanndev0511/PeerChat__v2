@@ -80,13 +80,6 @@ let sendMessage = async (e) => {
   e.preventDefault();
 
   let message = e.target.message.value;
-  channel.sendMessage({
-    text: JSON.stringify({
-      type: 'chat',
-      message: message,
-      displayName: displayName,
-    }),
-  });
 
   // const predictions = await classify(model, message);
   // if (predictions.length == 0) {
@@ -196,7 +189,21 @@ const main = async (text, displayName) => {
   const predictions = await classify(model, text);
   if (predictions.length == 0) {
     addMessageToDom(displayName, text);
+    channel.sendMessage({
+      text: JSON.stringify({
+        type: 'chat',
+        message: text,
+        displayName: displayName,
+      }),
+    });
   } else {
     addMessageToDom(displayName, '***');
+    channel.sendMessage({
+      text: JSON.stringify({
+        type: 'chat',
+        message: '***',
+        displayName: displayName,
+      }),
+    });
   }
 };
